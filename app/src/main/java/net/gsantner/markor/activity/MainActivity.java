@@ -36,6 +36,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import net.gsantner.markor.BuildConfig;
 import net.gsantner.markor.R;
 import net.gsantner.markor.frontend.NewFileDialog;
+import net.gsantner.markor.frontend.blog.BlogFragment;
 import net.gsantner.markor.frontend.filebrowser.MarkorFileBrowserFactory;
 import net.gsantner.markor.model.Document;
 import net.gsantner.markor.util.MarkorContextUtils;
@@ -64,6 +65,7 @@ public class MainActivity extends MarkorBaseActivity implements GsFileBrowserFra
     private SectionsPagerAdapter _sectionsAdapter;
     private GsFileBrowserFragment _notebook;
     private DocumentEditAndViewFragment _quicknote, _todo;
+    private BlogFragment _blog;
     private MoreFragment _more;
     private FloatingActionButton _fab;
 
@@ -161,6 +163,7 @@ public class MainActivity extends MarkorBaseActivity implements GsFileBrowserFra
             manager.putFragment(outState, Integer.toString(R.id.nav_notebook), _notebook);
             manager.putFragment(outState, Integer.toString(R.id.nav_quicknote), _quicknote);
             manager.putFragment(outState, Integer.toString(R.id.nav_todo), _todo);
+            manager.putFragment(outState, Integer.toString(R.id.nav_blog), _blog);
             manager.putFragment(outState, Integer.toString(R.id.nav_more), _more);
         } catch (NullPointerException | IllegalStateException ignored) {
             Log.d(MainActivity.class.getName(), "Child fragments null in onSaveInstanceState()");
@@ -181,6 +184,7 @@ public class MainActivity extends MarkorBaseActivity implements GsFileBrowserFra
             _notebook = (GsFileBrowserFragment) manager.getFragment(savedInstanceState, Integer.toString(R.id.nav_notebook));
             _quicknote = (DocumentEditAndViewFragment) manager.getFragment(savedInstanceState, Integer.toString(R.id.nav_quicknote));
             _todo = (DocumentEditAndViewFragment) manager.getFragment(savedInstanceState, Integer.toString(R.id.nav_todo));
+            _blog = (BlogFragment) manager.getFragment(savedInstanceState, Integer.toString(R.id.nav_blog));
             _more = (MoreFragment) manager.getFragment(savedInstanceState, Integer.toString(R.id.nav_more));
 
             if (_sectionsAdapter != null) {
@@ -516,6 +520,8 @@ public class MainActivity extends MarkorBaseActivity implements GsFileBrowserFra
                 frag = _quicknote = DocumentEditAndViewFragment.newInstance(new Document(_appSettings.getQuickNoteFile()), -1, false);
             } else if (id == R.id.nav_todo) {
                 frag = _todo = DocumentEditAndViewFragment.newInstance(new Document(_appSettings.getTodoFile()), -1, false);
+            } else if (id == R.id.nav_blog) {
+                frag = _blog = BlogFragment.newInstance();
             } else if (id == R.id.nav_more) {
                 frag = _more = MoreFragment.newInstance();
             } else {

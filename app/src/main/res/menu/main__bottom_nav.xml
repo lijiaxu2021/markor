@@ -27,6 +27,11 @@
         android:title="@string/quicknote" />
 
     <item
+        android:id="@+id/nav_blog"
+        android:icon="@drawable/ic_edit_black_24dp"
+        android:title="Blog" />
+
+    <item
         android:id="@+id/nav_more"
         android:icon="@drawable/ic_favorite_black_24dp"
         android:title="@string/more" />
