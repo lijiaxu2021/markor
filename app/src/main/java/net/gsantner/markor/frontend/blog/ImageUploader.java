@@ -41,9 +41,9 @@ public class ImageUploader {
         this.gson = new Gson();
     }
 
-    public String uploadImage(Uri imageUri) throws IOException {
+    public String uploadImage(Uri imageUri, Context context) throws IOException {
         // 压缩并转换为 Base64
-        String base64 = encodeImageToBase64(imageUri);
+        String base64 = encodeImageToBase64(imageUri, context);
         
         // 生成文件名
         String filename = generateFilename(imageUri);
@@ -69,23 +69,19 @@ public class ImageUploader {
         }
     }
 
-    private String encodeImageToBase64(Uri imageUri) throws IOException {
+    private String encodeImageToBase64(Uri imageUri, Context context) throws IOException {
         InputStream inputStream = null;
         try {
-            inputStream = java.util.Objects.requireNonNull(imageUri.toString().startsWith("content://") ? 
-                java.util.Objects.requireNonNull(androidx.core.content.FileProvider.getUriForFile(
-                    java.util.Objects.requireNonNull(androidx.core.app.ComponentActivity.class), "", imageUri)) : 
-                imageUri);
+            inputStream = context.getContentResolver().openInputStream(imageUri);
+            if (inputStream == null) {
+                throw new IOException("Cannot open input stream for URI: " + imageUri);
+            }
             
             // 先解码获取 Bitmap 用于压缩
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
             
             // 重置流
-            if (inputStream != null) {
-                inputStream.close();
-            }
+            inputStream.close();
             inputStream = null;
             
             // 压缩图片
@@ -106,10 +102,10 @@ public class ImageUploader {
                 bitmap.recycle();
             } else {
                 // 如果无法解码，直接读取原始数据
-                inputStream = java.util.Objects.requireNonNull(
-                    androidx.core.content.FileProvider.getUriForFile(
-                        java.util.Objects.requireNonNull(androidx.core.app.ComponentActivity.class), "", imageUri)
-                );
+                inputStream = context.getContentResolver().openInputStream(imageUri);
+                if (inputStream == null) {
+                    throw new IOException("Cannot reopen input stream");
+                }
                 byte[] buffer = new byte[4096];
                 int bytesRead;
                 while ((bytesRead = inputStream.read(buffer)) != -1) {
